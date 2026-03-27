@@ -28,3 +28,23 @@ Text-Based Rummikub is a terminal-based tile game adapted from the original clas
     - Sudden-Death: There is no complex point accumulation across multiple rounds. The first player to completely empty their hand immediately wins the game.
     - Empty Pool (Stalemate): If the draw pool runs out of tiles and no player can make a valid play, the game ends. All players then count the total face value of their remaining tiles; the player with the lowest total value is declared the winner.
 
+## Features
+
+### Features implemented
+- Game setup and tile distribution: Initializes the standard 104-tile deck and automatically distributes 14 starting tiles to 1-3 human players and 1 AI opponent.
+- Turn-based action system: Allows players to choose between playing valid combinations (melds) from their hand onto the board or drawing a tile from the pool.
+- "Breaking the ice" logic: Implements a point-calculation system that enforces the 30-point minimum threshold for a player's initial move before they can play freely.
+- Meld validation: Evaluates played tiles to ensure they form valid Groups (3-4 tiles of the same number, different colors) or Runs (3+ consecutive tiles of the same color).
+- AI opponent: Features an automated player capable of scanning its hand to find valid melds or drawing tile from the pool when no moves are available.
+- Win conditions: Detects sudden-death victories when a player empties their hand, and calculates the lowest remaining face value to determine a winner in the event of a stalemate (empty draw pool).
+- Game save system: Permits players to save their current game progress and load it at a later time to resume play.
+
+### How the coding requirements support these features
+- Generation of random events
+  - Supports the Game setup and tile distribution feature by randomly shuffling the 104 tiles in the draw pool and distributing them.
+  - Be used to introduce unpredictability into the AI opponent's decision-making process when multiple valid moves exist.
+- Data structures for storing data
+  - struct Tile & class Player: Encapsulate the core properties of a single tile (number, color) and a player's state (score, "ice-breaking" status). This supports Game setup and tile distribution.
+  - 
+
+
