@@ -5,20 +5,17 @@
 #include "board.h"
 #include "deck.h"
 
-class AIPlayer : public Player {
-private:
-    int difficultyLevel; // 1 for easy, 2 for hard
 
+
+class AIController {
 public:
-    // desc: setup ai player
-    // input: name and difficulty level
-    // output: none
-    AIPlayer(std::string name, int difficultyLevel);
+    // Difficulty 1：Easy mode (simple logic , ignore ice-breaking rules) 
+    static bool playTurnEasy(PlayerHand& hand, std::vector<std::vector<Tile>>& board);
 
-    // desc: ai logic for its turn
-    // input: board reference, deck reference
-    // output: none
-    void playTurn(Board& board, Deck& deck);
+    // Difficulty 2：Hard mode (complex logic, checks ice-breaking rules; prioritize highest face value/most cards) 
+    static bool playTurnHard(PlayerHand& hand, std::vector<std::vector<Tile>>& board, bool& iceBroken);
 };
+
+
 
 #endif
