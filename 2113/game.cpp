@@ -329,80 +329,85 @@ void Game::playLoop() {
 // input: player pointer
 // output: none
 void Game::doTurn(Player* player) {
-    std::cout << std::endl;
-    std::cout << player->getName() << "'s turn" << std::endl;
-    std::cout << "1. play one meld" << std::endl;
-    std::cout << "2. draw one tile" << std::endl;
-    std::cout << "3. save and quit" << std::endl;
+    while (true) {
+        std::cout << std::endl;
+        std::cout << player->getName() << "'s turn" << std::endl;
+        std::cout << "1. play one meld" << std::endl;
+        std::cout << "2. draw one tile" << std::endl;
+        std::cout << "3. save and quit" << std::endl;
 
-    int choice = UI::getValidInt(1, 3);
+        int choice = UI::getValidInt(1, 3);
 
-    if (choice == 1) {
-        int handCount = getHandCount(player);
+        if (choice == 1) {
+            int handCount = getHandCount(player);
 
-        if (handCount < 3) {
-            std::cout << "you do not have enough tiles to form a meld." << std::endl;
-            return;
+            if (handCount < 3) {
+                std::cout << "you do not have enough tiles to form a meld." << std::endl;
+                continue; // ask again
+            }
+
+            std::cout << "how many tiles do you want to play in this meld?" << std::endl;
+            int meldSize = UI::getValidInt(3, handCount);
+
+            std::vector<Tile> meld;
+            for (int i = 0; i < meldSize; i++) {
+                std::cout << "tile " << i + 1 << " number (1-13):" << std::endl;
+                int number = UI::getValidInt(1, 13);
+
+                std::cout << "tile " << i + 1 << " color (0 red, 1 blue, 2 yellow, 3 black):" << std::endl;
+                int colorValue = UI::getValidInt(0, 3);
+
+                Tile tile;
+                tile.number = number;
+                tile.color = static_cast<Color>(colorValue);
+                meld.push_back(tile);
+            }
+
+            if (!handContainsMeld(player, meld)) {
+                std::cout << "you do not have those exact tiles in hand. Try again." << std::endl;
+                continue; // ask again
+            }
+
+            if (!validator.isValid(meld)) {
+                std::cout << "invalid meld. Try again." << std::endl;
+                continue; // ask again
+            }
+
+            int score = validator.sumScore(meld);
+            if (!player->isIceBroken() && score < 30) {
+                std::cout << "first successful play must be at least 30 points. Try again." << std::endl;
+                continue; // ask again
+            }
+
+            for (const Tile& tile : meld) {
+                player->removeTile(tile.number, tile.color);
+            }
+
+            board.addMeld(meld);
+
+            if (!player->isIceBroken()) {
+                player->setIce(true);
+            }
+
+            std::cout << "meld played successfully." << std::endl;
+            break; // turn is over
+        } 
+        else if (choice == 2) {
+            if (deck.isEmpty()) {
+                std::cout << "draw pool is empty." << std::endl;
+            } else {
+                Tile* drawnTile = deck.draw();
+                player->addTile(drawnTile);
+                std::cout << "you drew ";
+                UI::displayTile(*drawnTile);
+                std::cout << std::endl;
+            }
+            break; // turn is over
+        } 
+        else {
+            saveAndQuit();
+            break; // exit loop after save
         }
-
-        std::cout << "how many tiles do you want to play in this meld?" << std::endl;
-        int meldSize = UI::getValidInt(3, handCount);
-
-        std::vector<Tile> meld;
-        for (int i = 0; i < meldSize; i++) {
-            std::cout << "tile " << i + 1 << " number (1-13):" << std::endl;
-            int number = UI::getValidInt(1, 13);
-
-            std::cout << "tile " << i + 1 << " color (0 red, 1 blue, 2 yellow, 3 black):" << std::endl;
-            int colorValue = UI::getValidInt(0, 3);
-
-            Tile tile;
-            tile.number = number;
-            tile.color = static_cast<Color>(colorValue);
-            meld.push_back(tile);
-        }
-
-        if (!handContainsMeld(player, meld)) {
-            std::cout << "you do not have those exact tiles in hand." << std::endl;
-            return;
-        }
-
-        if (!validator.isValid(meld)) {
-            std::cout << "invalid meld." << std::endl;
-            return;
-        }
-
-        int score = validator.sumScore(meld);
-        if (!player->isIceBroken() && score < 30) {
-            std::cout << "first successful play must be at least 30 points." << std::endl;
-            return;
-        }
-
-        for (const Tile& tile : meld) {
-            player->removeTile(tile.number, tile.color);
-        }
-
-        board.addMeld(meld);
-
-        if (!player->isIceBroken()) {
-            player->setIce(true);
-        }
-
-        std::cout << "meld played successfully." << std::endl;
-    } 
-    else if (choice == 2) {
-        if (deck.isEmpty()) {
-            std::cout << "draw pool is empty." << std::endl;
-        } else {
-            Tile* drawnTile = deck.draw();
-            player->addTile(drawnTile);
-            std::cout << "you drew ";
-            UI::displayTile(*drawnTile);
-            std::cout << std::endl;
-        }
-    } 
-    else {
-        saveAndQuit();
     }
 }
 
