@@ -57,3 +57,28 @@ bool Deck::isEmpty() {
 int Deck::getSize() {
     return static_cast<int>(pool.size());
 }
+
+// desc: get all remaining tiles in the deck
+// input: none
+// output: vector of tile pointers
+std::vector<Tile*> Deck::getTiles() {
+    return pool;
+}
+
+// desc: clear the deck memory when loading a new game
+// input: none
+// output: none
+void Deck::clearDeck() {
+    for (Tile* tile : pool) {
+        delete tile;
+    }
+    pool.clear();
+}
+
+// desc: add a tile to the bottom of the deck for loading
+// input: tile pointer
+// output: none
+void Deck::addTileToBottom(Tile* tile) {
+    // Insert at beginning so draw() from back still works properly
+    pool.insert(pool.begin(), tile);
+}

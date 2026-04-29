@@ -38,6 +38,21 @@ public:
     // input: none
     // output: integer count
     int getSize();
+
+    // desc: get all remaining tiles in the deck
+    // input: none
+    // output: vector of tile pointers
+    std::vector<Tile*> getTiles();
+
+    // desc: clear the deck memory when loading a new game
+    // input: none
+    // output: none
+    void clearDeck();
+
+    // desc: add a tile to the bottom of the deck for loading
+    // input: tile pointer
+    // output: none
+    void addTileToBottom(Tile* tile);
 };
 
 #endif
