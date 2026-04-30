@@ -1,11 +1,15 @@
 #include "player.h"
 #include <iostream>
 
-// Constructor: initialize player with empty hand
+// desc: Constructor - initialize player with empty hand
+// input: playerName - the name of the player
+// output: none
 Player::Player(std::string playerName) 
     : name(playerName), handHead(nullptr), iceBroken(false) {}
 
-// Destructor: free all tiles in hand
+// desc: Destructor - free all tiles in hand
+// input: none
+// output: none
 Player::~Player() {
     Node* current = handHead;
     while (current != nullptr) {
@@ -17,7 +21,9 @@ Player::~Player() {
     handHead = nullptr;
 }
 
-// Add a tile to player's hand (insert at head of linked list)
+// desc: Add a tile to player's hand (insert at head of linked list)
+// input: tile - pointer to the tile to add
+// output: none
 void Player::addTile(Tile* tile) {
     Node* newNode = new Node;
     newNode->tile = tile;
@@ -25,8 +31,9 @@ void Player::addTile(Tile* tile) {
     handHead = newNode;
 }
 
-// Remove a tile by number and color (remove first match found)
-// Return true if found and removed, false otherwise
+// desc: Remove a tile by number and color (remove first match found)
+// input: number - the number of the tile to remove, color - the color of the tile to remove
+// output: true if found and removed, false otherwise
 bool Player::removeTile(int number, Color color) {
     Node* prev = nullptr;
     Node* curr = handHead;
@@ -48,7 +55,9 @@ bool Player::removeTile(int number, Color color) {
     return false;
 }
 
-// Calculate total value of all tiles in hand
+// desc: Calculate total value of all tiles in hand
+// input: none
+// output: sum of tile numbers in player's hand
 int Player::getHandValue() {
     int total = 0;
     Node* current = handHead;
@@ -59,22 +68,30 @@ int Player::getHandValue() {
     return total;
 }
 
-// Check if player has broken the ice (score >= 30)
+// desc: Check if player has broken the ice (score >= 30)
+// input: none
+// output: true if ice is broken, false otherwise
 bool Player::isIceBroken() {
     return iceBroken;
 }
 
-// Set ice broken status
+// desc: Set ice broken status
+// input: status - new ice broken status (true/false)
+// output: none
 void Player::setIce(bool status) {
     iceBroken = status;
 }
 
-// Get head pointer of hand linked list
+// desc: Get head pointer of hand linked list
+// input: none
+// output: pointer to the first Node in the hand linked list
 Node* Player::getHand() {
     return handHead;
 }
 
-// Get player name
+// desc: Get player name
+// input: none
+// output: player's name as string
 std::string Player::getName() {
     return name;
 }
