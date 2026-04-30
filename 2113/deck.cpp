@@ -3,7 +3,9 @@
 #include <random>
 #include <ctime>
 
-// Constructor: create all 104 tiles (2 copies of 1-13 in 4 colors)
+// desc: Constructor - create all 104 tiles (2 copies of 1-13 in 4 colors)
+// input: none
+// output: none
 Deck::Deck() {
     // Two full sets of tiles
     for (int copy = 0; copy < 2; copy++) {
@@ -23,7 +25,9 @@ Deck::Deck() {
     shuffle();
 }
 
-// Destructor: free all remaining tiles
+// desc: Destructor - free all remaining tiles
+// input: none
+// output: none
 Deck::~Deck() {
     for (Tile* tile : pool) {
         delete tile;
@@ -31,14 +35,17 @@ Deck::~Deck() {
     pool.clear();
 }
 
-// Shuffle the deck randomly
+// desc: shuffle the deck randomly
+// input: none
+// output: none
 void Deck::shuffle() {
     static std::mt19937 rng(static_cast<unsigned>(std::time(nullptr)));
     std::shuffle(pool.begin(), pool.end(), rng);
 }
 
-// Draw one tile from the top (end of vector)
-// Return nullptr if deck is empty
+// desc: draw one tile from the top (end of vector)
+// input: none
+// output: pointer to drawn tile, or nullptr if deck is empty
 Tile* Deck::draw() {
     if (isEmpty()) {
         return nullptr;
@@ -48,12 +55,16 @@ Tile* Deck::draw() {
     return tile;
 }
 
-// Check if deck has no tiles left
+// desc: check if deck has no tiles left
+// input: none
+// output: true if empty, false otherwise
 bool Deck::isEmpty() {
     return pool.empty();
 }
 
-// Return number of remaining tiles
+// desc: return number of remaining tiles
+// input: none
+// output: count of tiles in deck
 int Deck::getSize() {
     return static_cast<int>(pool.size());
 }
