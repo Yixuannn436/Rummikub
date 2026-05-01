@@ -4,16 +4,12 @@
 #include <vector>
 #include <iostream>
 
-// desc: initializes an AIPlayer object with a specified name and difficulty level
-// input: name (string) representing the player's name, difficultyLevel (int) for the AI strategy
-// output: none
+
 AIPlayer::AIPlayer(std::string name, int difficultyLevel) 
     : Player(name), difficultyLevel(difficultyLevel) {
 }
 
-// desc: executes the AI's turn, playing a valid meld to the board based on difficulty level, or drawing a tile if no melds are possible
-// input: board (reference to the game Board), deck (reference to the game Deck)
-// output: none (modifies game state directly)
+
 void AIPlayer::playTurn(Board& board, Deck& deck) {
     
     std::vector<Tile> currentHand;
