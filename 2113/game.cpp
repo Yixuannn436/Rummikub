@@ -5,13 +5,11 @@
 #include <string>
 #include <vector>
 
-// desc: copy all tiles from a player's linked list hand into a vector
-// input: player pointer
-// output: a vector containing all tiles in that player's hand
 std::vector<Tile> getHandTiles(Player* player) {
     std::vector<Tile> tiles;
     Node* current = player->getHand();
 
+    // Traverse the player's hand linked list to collect all valid tiles
     while (current != nullptr) {
         if (current->tile != nullptr) {
             tiles.push_back(*(current->tile));
@@ -22,9 +20,6 @@ std::vector<Tile> getHandTiles(Player* player) {
     return tiles;
 }
 
-// desc: count how many tiles a player currently has in hand
-// input: player pointer
-// output: number of tiles in hand
 int getHandCount(Player* player) {
     int count = 0;
     Node* current = player->getHand();
@@ -37,9 +32,6 @@ int getHandCount(Player* player) {
     return count;
 }
 
-// desc: convert tile color enum into readable text
-// input: a color enum value
-// output: corresponding color string
 std::string colorToString(Color color) {
     if (color == RED) return "red";
     if (color == BLUE) return "blue";
@@ -47,9 +39,6 @@ std::string colorToString(Color color) {
     return "black";
 }
 
-// desc: print all tiles in one player's hand
-// input: player pointer
-// output: none
 void printHand(Player* player) {
     Node* current = player->getHand();
 
@@ -72,9 +61,6 @@ void printHand(Player* player) {
     }
 }
 
-// desc: print all melds currently on the board
-// input: board reference
-// output: none
 void printBoard(Board& board) {
     std::vector<std::vector<Tile>> table = board.getTable();
 
@@ -92,13 +78,11 @@ void printBoard(Board& board) {
     }
 }
 
-// desc: check whether the player's hand contains all tiles in a given meld
-// input: player pointer and a meld vector
-// output: true if the player has all those tiles, false otherwise
 bool handContainsMeld(Player* player, const std::vector<Tile>& meld) {
     std::vector<Tile> handTiles = getHandTiles(player);
     std::vector<bool> used(handTiles.size(), false);
 
+    // Verify if the player actually holds all the exact tiles they intend to play
     for (const Tile& needed : meld) {
         bool found = false;
 
@@ -120,9 +104,6 @@ bool handContainsMeld(Player* player, const std::vector<Tile>& meld) {
     return true;
 }
 
-// desc: check whether a player still has any possible valid play
-// input: player pointer
-// output: true if the player can still play at least one valid meld
 bool canPlayerPlay(Player* player) {
     std::vector<Tile> handTiles = getHandTiles(player);
     Validator validator;
@@ -133,6 +114,7 @@ bool canPlayerPlay(Player* player) {
 
     bool needThirty = !player->isIceBroken();
 
+    // Check for possible 'Group' melds (same number, different colors)
     for (int n = 1; n <= 13; n++) {
         std::vector<Tile> group;
         bool usedColor[4] = {false, false, false, false};
@@ -144,6 +126,7 @@ bool canPlayerPlay(Player* player) {
             }
         }
 
+        // Try a 3-tile group
         if (group.size() >= 3) {
             std::vector<Tile> meld3 = {group[0], group[1], group[2]};
             if (validator.isValid(meld3)) {
@@ -153,6 +136,7 @@ bool canPlayerPlay(Player* player) {
             }
         }
 
+        // Try a 4-tile group
         if (group.size() == 4) {
             if (validator.isValid(group)) {
                 if (!needThirty || validator.sumScore(group) >= 30) {
@@ -164,6 +148,7 @@ bool canPlayerPlay(Player* player) {
 
     Color colors[4] = {RED, BLUE, YELLOW, BLACK};
 
+    // Check for possible 'Run' melds (same color, consecutive numbers)
     for (Color color : colors) {
         std::vector<Tile> sameColor;
 
@@ -173,6 +158,7 @@ bool canPlayerPlay(Player* player) {
             }
         }
 
+        // Sort tiles by number to easily find consecutive sequences
         std::sort(sameColor.begin(), sameColor.end(),
             [](const Tile& a, const Tile& b) {
                 return a.number < b.number;
@@ -185,6 +171,7 @@ bool canPlayerPlay(Player* player) {
             }
         }
 
+        // Sliding window approach to find consecutive sequences of length >= 3
         for (size_t i = 0; i < uniqueTiles.size(); i++) {
             std::vector<Tile> run;
             run.push_back(uniqueTiles[i]);
@@ -210,25 +197,17 @@ bool canPlayerPlay(Player* player) {
     return false;
 }
 
-// desc: initialize game status values
-// input: none
-// output: none
 Game::Game() : turnIndex(0), isOver(false) {
 }
 
-// desc: free all dynamically allocated player objects
-// input: none
-// output: none
 Game::~Game() {
+    // Prevent memory leaks by freeing dynamically allocated player objects
     for (Player* player : players) {
         delete player;
     }
     players.clear();
 }
 
-// desc: show the main menu and start a new game, load a game, or quit
-// input: none
-// output: none
 void Game::startMenu() {
     UI::printWelcome();
     std::cout << "1. new game" << std::endl;
@@ -256,9 +235,6 @@ void Game::startMenu() {
     }
 }
 
-// desc: create players, choose ai difficulty, and deal 14 tiles to each player
-// input: none
-// output: none
 void Game::setup() {
     for (Player* player : players) {
         delete player;
@@ -284,6 +260,7 @@ void Game::setup() {
 
     players.push_back(new AIPlayer("computer", difficulty));
 
+    // Deal 14 starting tiles to each player
     for (int round = 0; round < 14; round++) {
         for (Player* player : players) {
             Tile* tile = deck.draw();
@@ -296,9 +273,6 @@ void Game::setup() {
     std::cout << "game setup complete." << std::endl;
 }
 
-// desc: run the main game loop until a win condition is reached
-// input: none
-// output: none
 void Game::playLoop() {
     while (!isOver) {
         if (players.empty()) {
@@ -309,6 +283,7 @@ void Game::playLoop() {
         Player* currentPlayer = players[turnIndex];
         showState(currentPlayer);
 
+        // Check if the current turn belongs to the AI
         AIPlayer* aiPlayer = dynamic_cast<AIPlayer*>(currentPlayer);
         if (aiPlayer != nullptr) {
             std::cout << currentPlayer->getName() << "'s turn (ai)." << std::endl;
@@ -325,9 +300,6 @@ void Game::playLoop() {
     }
 }
 
-// desc: process one human player's turn
-// input: player pointer
-// output: none
 void Game::doTurn(Player* player) {
     while (true) {
         std::cout << std::endl;
@@ -373,6 +345,7 @@ void Game::doTurn(Player* player) {
                 continue; // ask again
             }
 
+            // Enforce the 30-point initial meld rule ("Breaking the Ice")
             int score = validator.sumScore(meld);
             if (!player->isIceBroken() && score < 30) {
                 std::cout << "first successful play must be at least 30 points. Try again." << std::endl;
@@ -411,9 +384,6 @@ void Game::doTurn(Player* player) {
     }
 }
 
-// desc: clear the screen and show current board state and player hand
-// input: player pointer
-// output: none
 void Game::showState(Player* player) {
     UI::clearScreen();
 
@@ -434,19 +404,14 @@ void Game::showState(Player* player) {
     std::cout << std::endl;
 }
 
-// desc: move the turn index to the next player
-// input: none
-// output: none
 void Game::nextPlayer() {
     if (!players.empty()) {
         turnIndex = (turnIndex + 1) % players.size();
     }
 }
 
-// desc: check whether the game has ended by empty hand or stalemate
-// input: none
-// output: true if the game is over, false otherwise
 bool Game::checkWin() {
+    // Condition 1: Sudden Death (a player empties their hand)
     for (Player* player : players) {
         if (player->getHand() == nullptr) {
             std::cout << player->getName() << " wins by emptying all tiles." << std::endl;
@@ -455,6 +420,7 @@ bool Game::checkWin() {
         }
     }
 
+    // Condition 2: Stalemate (empty draw pool and no one can play)
     if (deck.isEmpty()) {
         bool anyoneCanStillPlay = false;
 
@@ -491,9 +457,6 @@ bool Game::checkWin() {
     return false;
 }
 
-// desc: save the current game state and end the game loop
-// input: none
-// output: none
 void Game::saveAndQuit() {
     std::cout << "enter save file name: ";
     std::string filename;
