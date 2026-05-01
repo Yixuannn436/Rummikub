@@ -59,6 +59,15 @@ Text-Based Rummikub is a terminal-based tile game adapted from the original clas
 
 ## Non-standard C/C++ libraries
 - No non-standard C/C++ libraries were used in this project.
-- All features are fully implemented using the standard C++ library (STL). For instance, standard libraries like <vector> and <set> are used for board and hand management, <random> and <ctime> for shuffling the deck, and <fstream> for the game save/load system.
+- All features are fully implemented using the standard C++ library (STL). For instance, standard libraries like `<vector>` and `<set>` are used for board and hand management,  `<random>` and `<ctime>` for shuffling the deck, and `<fstream>` for the game save/load system.
 
 
+## Compilation and Execution Instructions (Quick Start)
+
+To compile and run the game, please follow these instructions in your terminal:
+
+1. **Navigate to the project directory**: Open your terminal and `cd` into the folder containing the game files and the `Makefile`.
+2. **Compile the game**: Simply type the following command to compile all source files into an executable named `rummikub`: `make`
+3. **Run the game**: Once compiled, you can start the game by executing: `./rummikub`
+   *(Alternatively, you can compile and run the game in one step by typing `make run`)*
+4. **Clean up (Optional)**: If you need to remove the compiled object files and the executable to start fresh, use: `make clean`
