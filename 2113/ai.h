@@ -15,9 +15,9 @@ public:
     // output: none
     AIPlayer(std::string name, int difficultyLevel);
 
-    // desc: ai logic for its turn
-    // input: board reference, deck reference
-    // output: none
+    // desc: executes the AI's turn, playing a valid meld to the board based on difficulty level, or drawing a tile if no melds are possible
+   // input: board (reference to the game Board), deck (reference to the game Deck)
+  // output: none (modifies game state directly)
     void playTurn(Board& board, Deck& deck);
 };
 
