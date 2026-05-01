@@ -54,5 +54,7 @@ Text-Based Rummikub is a terminal-based tile game adapted from the original clas
 - File input/output
   - Powers the Game save system by writing the active game state to a file (such as .txt or .dat).
   - File streams (ifstream and ofstream) are used to record and retrieve the current draw pool, board melds, player hands, and turn order so a session can be paused and accurately reconstructed later.
+- Program codes in multiple files
+  - Supports all features by modularizing the project into distinct, manageable components. Instead of a single massive file, the game logic is separated into specific .cpp and .h files based on their functionality.
 
 
