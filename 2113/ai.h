@@ -10,8 +10,8 @@ private:
     int difficultyLevel; // 1 for easy, 2 for hard
 
 public:
-    // desc: setup ai player
-    // input: name and difficulty level
+     // desc: initializes an AIPlayer object with a specified name and difficulty level
+    // input: name (string) representing the player's name, difficultyLevel (int) for the AI strategy
     // output: none
     AIPlayer(std::string name, int difficultyLevel);
 
