@@ -41,25 +41,25 @@ Text-Based Rummikub is a terminal-based tile game adapted from the original clas
 
 ### How the coding requirements support these features
 - Generation of random events
-  - Supports the Game setup and tile distribution feature by randomly shuffling the 104 tiles in the draw pool and distributing them.
-  - Be used to introduce unpredictability into the AI opponent's decision-making process when multiple valid moves exist.
+  - Supports the Game setup and tile distribution feature by randomly shuffling the 104 tiles in the draw pool using the <random> library (std::shuffle with std::mt19937 engine seeded by time).
+  - It introduces unpredictability into the game state, ensuring every new session has a unique starting deck and tile distribution.
 - Data structures for storing data
-  - struct Tile & class Player: Encapsulates the core properties of a single tile (number, color) and a player's state (score, "ice-breaking" status). This supports Game setup and tile distribution.
-  - Custom linked list: Implemented to manage the dynamic size of players' hands. This supports the Turn-based action system, allowing efficient node insertion when drawing tiles and node deletion when playing valid melds.
-  - std::vector<Tile> & std::vector<vector<Tile>>: Utilized to store the draw pool and the active board respectively. This ensures efficient Meld validation and board management, handling the continuously growing number of tiles played by all players.
+  - struct Tile: Encapsulates the core properties of a single tile (number, color).
+  - Custom linked list: Implemented via a Node struct within the Player class to manage the dynamic size of players' hands. This supports the Turn-based action system, allowing efficient $O(1)$ node insertion when drawing tiles and node deletion when playing valid melds without shifting memory elements.
+  - std::vector: Utilized extensively to store the draw pool (std::vector<Tile*>) and the active board (std::vector<std::vector<Tile*>>). This ensures efficient Meld validation and board management, handling the continuously growing number of grouped tiles played by all players.
 - Dynamic memory management
-  - Memory allocation for gameplay (new): Supports the Turn-based action system and board management. We dynamically allocate memory on the heap (e.g. using new Node or new Tile) whenever a player draws a tile or places a new valid meld onto the board.
-  - Memory deallocation to prevent leaks (delete): Essential for maintaining performance. When a player plays a tile from their hand, its original memory in the linked list is safely freed.
-  - Endgame cleanup: Supports the Winning conditions. Once the game concludes via Sudden-Death or Stalemate, all dynamically allocated objects (remaining pool, active hands, board melds) are systematically destroyed (delete) to ensure zero memory leaks.
+  - Memory allocation for gameplay (new): Supports the setup and action system. We dynamically allocate memory on the heap for every single tile (new Tile) during deck initialization. Furthermore, new Node is dynamically allocated whenever a tile is added to a player's linked-list hand.
+  - Memory deallocation to prevent leaks (delete): Essential for maintaining memory integrity. When a player successfully plays a tile, its original wrapper node in the linked list is safely freed (delete curr).
+  - Endgame & Object cleanup: The destructors (~Deck(), ~Player()) systematically traverse and destroy all dynamically allocated objects (delete tile, delete node) remaining in the pool or players' hands when the game concludes or when objects go out of scope, ensuring zero memory leaks.
 - File input/output
-  - Powers the Game save system by writing the active game state to a file (such as .txt or .dat).
-  - File streams (ifstream and ofstream) are used to record and retrieve the current draw pool, board melds, player hands, and turn order so a session can be paused and accurately reconstructed later.
+  - Powers the Game save system by writing the active game state to an external file(e.g., .txt).
+  - File streams (std::ifstream and std::ofstream) are used to record and retrieve the current draw pool, board melds, player hands, and turn order so an active session can be safely paused and accurately reconstructed later.
 - Program codes in multiple files
   - Supports all features by modularizing the project into distinct, manageable components. Instead of a single massive file, the game logic is separated into specific .cpp and .h files based on their functionality.
 
 ## Non-standard C/C++ libraries
 - No non-standard C/C++ libraries were used in this project.
-- All features are fully implemented using the standard C++ library (STL). For instance, standard libraries like `<vector>` and `<set>` are used for board and hand management,  `<random>` and `<ctime>` for shuffling the deck, and `<fstream>` for the game save/load system.
+- All features are fully implemented using the standard C++ library (STL). For instance, standard libraries like `<vector>` and `<string>` are used for board and hand management,  `<random>` and `<ctime>` for shuffling the deck, and `<fstream>` for the game save/load system.
 
 
 ## Compilation and Execution Instructions (Quick Start)
