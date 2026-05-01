@@ -57,4 +57,8 @@ Text-Based Rummikub is a terminal-based tile game adapted from the original clas
 - Program codes in multiple files
   - Supports all features by modularizing the project into distinct, manageable components. Instead of a single massive file, the game logic is separated into specific .cpp and .h files based on their functionality.
 
+## Non-standard C/C++ libraries
+- No non-standard C/C++ libraries were used in this project.
+- All features are fully implemented using the standard C++ library (STL). For instance, standard libraries like <vector> and <set> are used for board and hand management, <random> and <ctime> for shuffling the deck, and <fstream> for the game save/load system.
+
 
