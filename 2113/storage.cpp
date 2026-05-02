@@ -3,9 +3,6 @@
 #include <fstream>
 #include <iostream>
 
-// desc: save game state to a text file
-// input: filename, players list, deck, board, current turn
-// output: true if file is saved successfully, false otherwise
 bool Storage::saveGame(std::string filename, const std::vector<Player*>& players, Deck& deck, Board& board, int currentTurn) {
     std::ofstream outFile(filename);
     if (!outFile.is_open()) {
@@ -61,9 +58,6 @@ bool Storage::saveGame(std::string filename, const std::vector<Player*>& players
     return true;
 }
 
-// desc: load game state from a text file
-// input: filename, players list, deck, board, current turn reference
-// output: true if file is loaded successfully, false otherwise
 bool Storage::loadGame(std::string filename, std::vector<Player*>& players, Deck& deck, Board& board, int& currentTurn) {
     std::ifstream inFile(filename);
     if (!inFile.is_open()) return false;
