@@ -4,14 +4,15 @@
 #include <vector>
 #include <iostream>
 
-
-AIPlayer::AIPlayer(std::string name, int difficultyLevel) 
+// Constructor for AIPlayer
+AIPlayer::AIPlayer(std::string name, int difficultyLevel)
     : Player(name), difficultyLevel(difficultyLevel) {
 }
 
-
+// Main logic for the AI's turn
 void AIPlayer::playTurn(Board& board, Deck& deck) {
-    
+
+    // Convert the linked list hand into a vector for easier manipulation
     std::vector<Tile> currentHand;
     Node* current = getHand();
     while (current != nullptr) {
@@ -23,13 +24,11 @@ void AIPlayer::playTurn(Board& board, Deck& deck) {
 
     Validator validator;
     bool hasPlayed = false;
-    
-  
-    bool iceStatus = isIceBroken();
 
+    // DIFFICULTY LEVEL 1: Simple strategy (plays the first valid meld found)
     if (difficultyLevel == 1) {
-       
-       
+        
+        // Try to find a Group (same number, different colors)
         for (int n = 1; n <= 13; n++) {
             std::vector<Tile> potentialMeld;
             bool colorUsed[4] = {false, false, false, false};
@@ -41,43 +40,24 @@ void AIPlayer::playTurn(Board& board, Deck& deck) {
                 }
             }
 
+            // If a group of 3 or more is found, play it immediately
             if (potentialMeld.size() >= 3) {
-               
                 std::vector<Tile> meld = {potentialMeld[0], potentialMeld[1], potentialMeld[2]};
-                
+
                 if (validator.isValid(meld)) {
-                    int score = validator.sumScore(meld);
-                   
-                    if (iceStatus || score >= 30) {
-                        board.addMeld(meld);
-                        for (const Tile& t : meld) {
-                            removeTile(t.number, t.color);
-                        }
-                        setIce(true);
-                        std::cout << getName() << " played a valid Group meld!" << std::endl;
-                        return; 
+                    board.addMeld(meld);
+                    // Remove tiles from AI's hand
+                    for (const Tile& t : meld) {
+                        removeTile(t.number, t.color);
                     }
-                }
-                
-             
-                if (!iceStatus && potentialMeld.size() == 4) {
-                    if (validator.isValid(potentialMeld)) {
-                        int score = validator.sumScore(potentialMeld);
-                        if (score >= 30) {
-                            board.addMeld(potentialMeld);
-                            for (const Tile& t : potentialMeld) {
-                                removeTile(t.number, t.color);
-                            }
-                            setIce(true);
-                            std::cout << getName() << " played a valid 4-tile Group meld to break ice!" << std::endl;
-                            return; 
-                        }
-                    }
+                    setIce(true);
+                    std::cout << getName() << " played a valid Group meld!" << std::endl;
+                    return;
                 }
             }
         }
 
-       
+        // Try to find a Run (consecutive numbers, same color)
         Color colors[] = {RED, BLUE, YELLOW, BLACK};
         for (Color c : colors) {
             std::vector<Tile> colorTiles;
@@ -86,7 +66,8 @@ void AIPlayer::playTurn(Board& board, Deck& deck) {
                     colorTiles.push_back(t);
                 }
             }
-            
+
+            // Sort tiles by number to find sequences
             std::sort(colorTiles.begin(), colorTiles.end(), [](const Tile& a, const Tile& b) {
                 return a.number < b.number;
             });
@@ -102,29 +83,26 @@ void AIPlayer::playTurn(Board& board, Deck& deck) {
                         run.push_back(colorTiles[end]);
                         currentNum = nextNum;
 
+                        // Play the run if it has 3 or more tiles
                         if (run.size() >= 3) {
                             if (validator.isValid(run)) {
-                                int score = validator.sumScore(run);
-                               
-                                if (iceStatus || score >= 30) {
-                                    board.addMeld(run);
-                                    for (const Tile& t : run) {
-                                        removeTile(t.number, t.color);
-                                    }
-                                    setIce(true);
-                                    std::cout << getName() << " played a valid Run meld!" << std::endl;
-                                    return; 
+                                board.addMeld(run);
+                                for (const Tile& t : run) {
+                                    removeTile(t.number, t.color);
                                 }
+                                setIce(true);
+                                std::cout << getName() << " played a valid Run meld!" << std::endl;
+                                return;
                             }
                         }
                     } else if (nextNum > currentNum + 1) {
-                        break; 
+                        break; // Sequence broken
                     }
                 }
             }
         }
 
-      
+        // If no moves found, draw a tile
         if (!deck.isEmpty()) {
             Tile* drawnTile = deck.draw();
             addTile(drawnTile);
@@ -132,28 +110,29 @@ void AIPlayer::playTurn(Board& board, Deck& deck) {
         } else {
             std::cout << getName() << " has no valid meld to play, draw pool is empty." << std::endl;
         }
-    } 
-    
+    }
+
+    // DIFFICULTY LEVEL 2: Smart strategy (finds all options and picks the highest score)
     else if (difficultyLevel == 2) {
         std::vector<std::vector<Tile>> possibleMelds;
 
+        // Search for all possible Groups
         for (int n = 1; n <= 13; n++) {
             std::vector<Tile> groupTiles;
             bool seenColors[4] = {false, false, false, false};
-            
+
             for (const Tile& t : currentHand) {
                 if (t.number == n && !seenColors[t.color]) {
                     seenColors[t.color] = true;
                     groupTiles.push_back(t);
                 }
             }
-            
+
             if (groupTiles.size() >= 3) {
                 std::vector<Tile> m3 = {groupTiles[0], groupTiles[1], groupTiles[2]};
                 if (validator.isValid(m3)) {
                     possibleMelds.push_back(m3);
                 }
-              
                 if (groupTiles.size() == 4) {
                     std::vector<Tile> m4 = groupTiles;
                     if (validator.isValid(m4)) {
@@ -163,6 +142,7 @@ void AIPlayer::playTurn(Board& board, Deck& deck) {
             }
         }
 
+        // Search for all possible Runs
         Color colors[] = {RED, BLUE, YELLOW, BLACK};
         for (Color c : colors) {
             std::vector<Tile> colorTiles;
@@ -171,7 +151,7 @@ void AIPlayer::playTurn(Board& board, Deck& deck) {
                     colorTiles.push_back(t);
                 }
             }
-            
+
             std::sort(colorTiles.begin(), colorTiles.end(), [](const Tile& a, const Tile& b) {
                 return a.number < b.number;
             });
@@ -197,13 +177,15 @@ void AIPlayer::playTurn(Board& board, Deck& deck) {
             }
         }
 
+        // Find the meld with the highest score
         int bestScore = -1;
         int bestIdx = -1;
+        bool iceStatus = isIceBroken();
 
         for (size_t i = 0; i < possibleMelds.size(); i++) {
             int score = validator.sumScore(possibleMelds[i]);
-            
-            
+
+            // First play must be at least 30 points
             if (!iceStatus && score < 30) continue;
 
             if (score > bestScore) {
@@ -212,19 +194,21 @@ void AIPlayer::playTurn(Board& board, Deck& deck) {
             }
         }
 
+        // If a valid best move exists, play it
         if (bestIdx != -1) {
             std::vector<Tile> bestMeld = possibleMelds[bestIdx];
-            
+
             for (const Tile& t : bestMeld) {
                 removeTile(t.number, t.color);
             }
-            
+
             board.addMeld(bestMeld);
             setIce(true);
             std::cout << getName() << " played a valid meld! Score: " << bestScore << std::endl;
             return;
         }
 
+        // Fallback: draw a tile
         if (!deck.isEmpty()) {
             Tile* drawnTile = deck.draw();
             addTile(drawnTile);
@@ -234,3 +218,4 @@ void AIPlayer::playTurn(Board& board, Deck& deck) {
         }
     }
 }
+
