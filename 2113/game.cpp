@@ -398,8 +398,17 @@ void Game::showState(Player* player) {
     printBoard(board);
 
     std::cout << std::endl;
-    std::cout << "your hand:" << std::endl;
-    printHand(player);
+
+    // Use dynamic_cast to check if the current player is an AI
+    AIPlayer* aiPlayer = dynamic_cast<AIPlayer*>(player);
+    
+    if (aiPlayer != nullptr) {
+        std::cout << player->getName() << "'s hand is hidden." << std::endl;
+        std::cout << "(Computer currently holds " << getHandCount(player) << " tiles)" << std::endl;
+    } else {
+        std::cout << player->getName() << "'s hand:" << std::endl;
+        printHand(player);
+    }
 
     std::cout << std::endl;
 }
