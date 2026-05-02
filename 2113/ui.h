@@ -1,24 +1,29 @@
 #ifndef UI_H
 #define UI_H
 
-#include <string>
 #include "tile.h"
 
 class UI {
 public:
-    static void printWelcome();
-    
-    /**
-     * @brief 获取合法的整数输入，带异常处理
-     */
-    static int getValidInt(int min, int max);
+    // desc: print a welcome message and the game title to the console
+    // input: none
+    // output: none
+    void printWelcome();
 
-    /**
-     * @brief 带颜色打印一张牌
-     */
-    static void displayTile(const Tile& t);
+    // desc: prompt the user for an integer input and validate it within a range
+    // input: min (minimum allowed value), max (maximum allowed value)
+    // output: the validated integer
+    int getValidInt(int min, int max);
 
-    static void clearScreen();
+    // desc: display a single game tile with its specific color and number
+    // input: t (the tile object to be displayed)
+    // output: none
+    void displayTile(const Tile& t);
+
+    // desc: clear the terminal screen using ANSI escape sequences
+    // input: none
+    // output: none
+    void clearScreen();
 };
 
 #endif
